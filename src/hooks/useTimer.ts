@@ -12,7 +12,7 @@ export function useTimer() {
   const remainingMs = useTimerStore(
     (state) => state.remainingMs
   );
-
+  const setDuration = useTimerStore((state) => state.setDuration);
   const start = useTimerStore((state) => state.start);
   const pause = useTimerStore((state) => state.pause);
   const reset = useTimerStore((state) => state.reset);
@@ -39,5 +39,6 @@ export function useTimer() {
     start,
     pause,
     reset,
+    setDuration
   };
 }

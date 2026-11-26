@@ -4,7 +4,16 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { WaterAnimation } from "./components/floating/WaterAnimation";
 
 function App() {
-  const { status, progress, formattedTime, start, pause, reset, remainingMs } = useTimer();
+  const {
+    status,
+    progress,
+    formattedTime,
+    start,
+    pause,
+    reset,
+    remainingMs,
+    setDuration,
+  } = useTimer();
 
   return (
     <main className="h-full w-full bg-transparent p-2">
@@ -26,7 +35,11 @@ function App() {
         {/* Timer */}
         <div className="flex items-center gap-3">
           {/* Water placeholder */}
-          <WaterAnimation progress={progress} remainingMs={remainingMs} status={status} />
+          <WaterAnimation
+            progress={progress}
+            remainingMs={remainingMs}
+            status={status}
+          />
 
           <div className="min-w-0 flex-1">
             <h1 className="text-xl font-semibold tracking-tight tabular-nums text-white">
@@ -63,9 +76,23 @@ function App() {
               title="Reset"
             >
               <RotateCcw size={14} />
+              
             </button>
+            
           </div>
         </div>
+        <div className="flex items-center justify-center gap-2">
+                {[1, 15, 25, 45, 60].map((minutes) => (
+                  <button
+                    key={minutes}
+                    onClick={() => setDuration(minutes)}
+                    disabled={status === "running"}
+                    className="rounded-lg border border-white/10 px-3 py-1 text-xs text-gray-400 transition hover:border-sky-400/50 hover:bg-sky-400/10 hover:text-sky-400 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {minutes}m
+                  </button>
+                ))}
+              </div>
       </div>
     </main>
   );

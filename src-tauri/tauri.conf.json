@@ -13,10 +13,10 @@
     "windows": [
       {
         "title": "Drop",
-        "width": 240,
-        "height": 110,
-        "minWidth": 220,
-        "minHeight": 100,
+        "width": 300,
+        "height": 150,
+        "minWidth": 300,
+        "minHeight": 150,
         "resizable": false,
         "fullscreen": false,
         "decorations": false,
