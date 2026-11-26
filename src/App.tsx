@@ -3,9 +3,11 @@ import { Play, Pause, RotateCcw, Grip } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { WaterAnimation } from "./components/floating/WaterAnimation";
 import { useState } from "react";
+import { TagManager } from "./components/dashboard/TagManager";
 
 function App() {
   const [customMinutes, setCustomMinutes] = useState("30");
+  const [selectedTag, setSelectedTag] = useState("Coding");
   const {
     status,
     progress,
@@ -48,7 +50,7 @@ function App() {
               {formattedTime}
             </h1>
 
-            <p className="text-[10px] text-gray-400">Focus session</p>
+            <p className="text-[10px] text-gray-400">{selectedTag} </p>
           </div>
 
           {/* Controls */}
@@ -87,13 +89,13 @@ function App() {
               key={minutes}
               onClick={() => setDuration(minutes)}
               disabled={status === "running"}
-              className="rounded-lg border border-white/10 px-3 py-1 text-xs text-gray-400 transition hover:border-sky-400/50 hover:bg-sky-400/10 hover:text-sky-400 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-lg border border-white/10 px-3 py-1 text-xs text-gray-400 transition hover:border-sky-400/50 hover:bg-sky-400/10 hover:text-sky-400 disabled:cursor-not-allowed disabled:opacity-40 mb-1 mt-1"
             >
               {minutes}m
             </button>
           ))}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mb-1">
           <input
             type="number"
             min="1"
@@ -102,7 +104,7 @@ function App() {
             onChange={(e) => setCustomMinutes(e.target.value)}
             disabled={status === "running"}
             placeholder="Minutes"
-            className="w-20 rounded-lg border border-white/10 bg-[#252d36] px-3 py-2 text-sm text-white outline-none focus:border-sky-400 disabled:opacity-40"
+            className="w-20 rounded-lg border border-white/10 bg-[#252d36] px-2 py-1 text-sm text-white outline-none focus:border-sky-400 disabled:opacity-40"
           />
 
           <button
@@ -118,10 +120,17 @@ function App() {
               }
             }}
             disabled={status === "running"}
-            className="rounded-lg bg-sky-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-sky-400 disabled:opacity-40"
+            className="rounded-lg bg-sky-500 px-4 py-1 text-xs font-semibold text-white transition hover:bg-sky-400 disabled:opacity-40"
           >
             Set timer
           </button>
+        </div>
+        <div className="border-t border-white/10 pt-3">
+          <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-gray-500">
+            Activity
+          </p>
+
+          <TagManager selectedTag={selectedTag} onSelectTag={setSelectedTag} />
         </div>
       </div>
     </main>
