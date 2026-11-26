@@ -1,9 +1,10 @@
 import { useTimer } from "./hooks/useTimer";
 import { Play, Pause, RotateCcw, Grip } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { WaterAnimation } from "./components/floating/WaterAnimation";
 
 function App() {
-  const { status, progress, formattedTime, start, pause, reset } = useTimer();
+  const { status, progress, formattedTime, start, pause, reset, remainingMs } = useTimer();
 
   return (
     <main className="h-full w-full bg-transparent p-2">
@@ -25,14 +26,7 @@ function App() {
         {/* Timer */}
         <div className="flex items-center gap-3">
           {/* Water placeholder */}
-          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#252d36]">
-            <div
-              className="absolute bottom-0 left-0 w-full bg-sky-400 transition-all duration-300"
-              style={{
-                height: `${progress * 100}%`,
-              }}
-            />
-          </div>
+          <WaterAnimation progress={progress} remainingMs={remainingMs} />
 
           <div className="min-w-0 flex-1">
             <h1 className="text-xl font-semibold tracking-tight tabular-nums text-white">
