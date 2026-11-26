@@ -26,7 +26,7 @@ function App() {
         {/* Timer */}
         <div className="flex items-center gap-3">
           {/* Water placeholder */}
-          <WaterAnimation progress={progress} remainingMs={remainingMs} />
+          <WaterAnimation progress={progress} remainingMs={remainingMs} status={status} />
 
           <div className="min-w-0 flex-1">
             <h1 className="text-xl font-semibold tracking-tight tabular-nums text-white">

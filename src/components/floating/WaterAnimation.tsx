@@ -1,14 +1,16 @@
-
 import { motion } from "motion/react";
+import type { TimerStatus } from "../../services/timerEngine";
 
 interface WaterAnimationProps {
   progress: number;
   remainingMs: number;
+  status: TimerStatus;
 }
 
 export function WaterAnimation({
   progress,
   remainingMs,
+  status,
 }: WaterAnimationProps) {
   const waterColor =
     remainingMs <= 60_000
@@ -18,10 +20,34 @@ export function WaterAnimation({
         : "#38bdf8";
 
   const waterHeight = Math.max(0, Math.min(1, progress)) * 100;
+  const waveDuration =
+    status === "running"
+      ? 3
+      : status === "paused"
+        ? 10
+        : status === "completed"
+          ? 1.5
+          : 5;
 
+  const isCompleted = status === "completed";
   return (
-    <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#252d36]">
-
+    <motion.div
+      className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#252d36]"
+      animate={{
+        boxShadow: isCompleted
+          ? [
+              "0 0 5px rgba(239,68,68,0.2)",
+              "0 0 16px rgba(239,68,68,0.7)",
+              "0 0 5px rgba(239,68,68,0.2)",
+            ]
+          : "0 0 0px rgba(0,0,0,0)",
+      }}
+      transition={{
+        duration: 2,
+        repeat: isCompleted ? Infinity : 0,
+        ease: "easeInOut",
+      }}
+    >
       {/* Liquid body */}
       <motion.div
         className="absolute bottom-0 left-0 w-full"
@@ -34,13 +60,12 @@ export function WaterAnimation({
           background: `linear-gradient(to bottom, ${waterColor} 0%, ${waterColor} 55%, #0c4a6e 100%)`,
         }}
       >
-
         {/* Back wave */}
         <motion.div
           className="absolute -top-[5px] left-0 w-[200%]"
           animate={{ x: ["0%", "-50%"] }}
           transition={{
-            duration: 5,
+            duration: waveDuration,
             repeat: Infinity,
             ease: "linear",
           }}
@@ -59,7 +84,7 @@ export function WaterAnimation({
           className="absolute -top-[4px] left-0 w-[200%]"
           animate={{ x: ["-50%", "0%"] }}
           transition={{
-            duration: 3,
+            duration: waveDuration,
             repeat: Infinity,
             ease: "linear",
           }}
@@ -99,13 +124,10 @@ export function WaterAnimation({
 
         {/* Light reflection */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10" />
-
       </motion.div>
 
       {/* Glass reflection */}
       <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/10 via-transparent to-transparent" />
-
-    </div>
+    </motion.div>
   );
 }
-
