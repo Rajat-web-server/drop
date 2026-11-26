@@ -2,8 +2,10 @@ import { useTimer } from "./hooks/useTimer";
 import { Play, Pause, RotateCcw, Grip } from "lucide-react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { WaterAnimation } from "./components/floating/WaterAnimation";
+import { useState } from "react";
 
 function App() {
+  const [customMinutes, setCustomMinutes] = useState("30");
   const {
     status,
     progress,
@@ -76,23 +78,51 @@ function App() {
               title="Reset"
             >
               <RotateCcw size={14} />
-              
             </button>
-            
           </div>
         </div>
         <div className="flex items-center justify-center gap-2">
-                {[1, 15, 25, 45, 60].map((minutes) => (
-                  <button
-                    key={minutes}
-                    onClick={() => setDuration(minutes)}
-                    disabled={status === "running"}
-                    className="rounded-lg border border-white/10 px-3 py-1 text-xs text-gray-400 transition hover:border-sky-400/50 hover:bg-sky-400/10 hover:text-sky-400 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    {minutes}m
-                  </button>
-                ))}
-              </div>
+          {[1, 15, 25, 45, 60].map((minutes) => (
+            <button
+              key={minutes}
+              onClick={() => setDuration(minutes)}
+              disabled={status === "running"}
+              className="rounded-lg border border-white/10 px-3 py-1 text-xs text-gray-400 transition hover:border-sky-400/50 hover:bg-sky-400/10 hover:text-sky-400 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {minutes}m
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            min="1"
+            max="1440"
+            value={customMinutes}
+            onChange={(e) => setCustomMinutes(e.target.value)}
+            disabled={status === "running"}
+            placeholder="Minutes"
+            className="w-20 rounded-lg border border-white/10 bg-[#252d36] px-3 py-2 text-sm text-white outline-none focus:border-sky-400 disabled:opacity-40"
+          />
+
+          <button
+            onClick={() => {
+              const minutes = Number(customMinutes);
+
+              if (
+                Number.isInteger(minutes) &&
+                minutes >= 1 &&
+                minutes <= 1440
+              ) {
+                setDuration(minutes);
+              }
+            }}
+            disabled={status === "running"}
+            className="rounded-lg bg-sky-500 px-4 py-2 text-xs font-semibold text-white transition hover:bg-sky-400 disabled:opacity-40"
+          >
+            Set timer
+          </button>
+        </div>
       </div>
     </main>
   );
