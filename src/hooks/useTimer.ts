@@ -8,6 +8,7 @@ import {
 } from "../store/timerStore";
 
 export function useTimer() {
+  const sessions = useTimerStore((state) => state.sessions);
   const status = useTimerStore((state) => state.status);
   const remainingMs = useTimerStore(
     (state) => state.remainingMs
@@ -39,6 +40,7 @@ export function useTimer() {
     start,
     pause,
     reset,
-    setDuration
+    setDuration,
+    sessions,
   };
 }

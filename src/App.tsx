@@ -4,6 +4,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { WaterAnimation } from "./components/floating/WaterAnimation";
 import { useState } from "react";
 import { TagManager } from "./components/dashboard/TagManager";
+import { SessionHistory } from "./components/dashboard/SessionHistory";
 
 function App() {
   const [customMinutes, setCustomMinutes] = useState("30");
@@ -17,8 +18,12 @@ function App() {
     reset,
     remainingMs,
     setDuration,
+    sessions,
   } = useTimer();
 
+  {
+            console.log("session",sessions);
+          }
   return (
     <main className="h-full w-full bg-transparent p-2">
       <div className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-[#15191f]/95 p-3 shadow-2xl">
@@ -65,7 +70,7 @@ function App() {
               </button>
             ) : (
               <button
-                onClick={start}
+                onClick={() => start(selectedTag)}
                 disabled={status === "completed"}
                 className="rounded-lg p-2 text-sky-400 transition hover:bg-white/10 disabled:opacity-40"
                 title="Start"
@@ -131,6 +136,8 @@ function App() {
           </p>
 
           <TagManager selectedTag={selectedTag} onSelectTag={setSelectedTag} />
+          <SessionHistory sessions={sessions}  />
+          
         </div>
       </div>
     </main>

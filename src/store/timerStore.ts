@@ -1,3 +1,4 @@
+
 import { create } from "zustand";
 
 import {
@@ -7,20 +8,32 @@ import {
   type TimerStatus,
 } from "../services/timerEngine";
 
+export interface Session {
+  id: string;
+  tag: string;
+  durationMs: number;
+  startedAt: number;
+  completedAt: number;
+}
+
 interface TimerState {
   durationMs: number;
   remainingMs: number;
   endsAt: number | null;
   status: TimerStatus;
 
-  start: () => void;
+  start: (tag?: string) => void;
   pause: () => void;
   reset: () => void;
   setDuration: (minutes: number) => void;
   sync: () => void;
+
+  currentStartedAt: number | null;
+  currentTag: string;
+  sessions: Session[];
 }
 
-const DEFAULT_DURATION = 10 * 1000;
+const DEFAULT_DURATION = 3 * 1000;
 
 export const useTimerStore = create<TimerState>((set, get) => ({
   durationMs: DEFAULT_DURATION,
@@ -28,16 +41,27 @@ export const useTimerStore = create<TimerState>((set, get) => ({
   endsAt: null,
   status: "idle",
 
-  start: () => {
+  currentStartedAt: null,
+  currentTag: "Coding",
+  sessions: [],
+
+  start: (tag) => {
     const state = get();
 
     if (state.status === "running") return;
-
     if (state.remainingMs <= 0) return;
 
     set({
       endsAt: Date.now() + state.remainingMs,
       status: "running",
+
+      currentStartedAt:
+        state.currentStartedAt ?? Date.now(),
+
+      currentTag:
+        state.currentStartedAt !== null
+          ? state.currentTag
+          : (tag ?? "Uncategorized"),
     });
   },
 
@@ -46,7 +70,10 @@ export const useTimerStore = create<TimerState>((set, get) => ({
 
     if (state.status !== "running") return;
 
-    const remainingMs = getRemainingTime(state.endsAt, state.remainingMs);
+    const remainingMs = getRemainingTime(
+      state.endsAt,
+      state.remainingMs
+    );
 
     set({
       remainingMs,
@@ -60,12 +87,13 @@ export const useTimerStore = create<TimerState>((set, get) => ({
       remainingMs: state.durationMs,
       endsAt: null,
       status: "idle",
+      currentStartedAt: null,
+      currentTag: "Coding",
     }));
   },
 
   setDuration: (minutes) => {
     if (!Number.isFinite(minutes) || minutes <= 0) return;
-
     if (get().status === "running") return;
 
     const durationMs = minutes * 60 * 1000;
@@ -75,27 +103,45 @@ export const useTimerStore = create<TimerState>((set, get) => ({
       remainingMs: durationMs,
       endsAt: null,
       status: "idle",
+      currentStartedAt: null,
     });
   },
 
   sync: () => {
     const state = get();
 
+    // Only sync an active timer
     if (state.status !== "running") return;
 
-    const remainingMs = getRemainingTime(state.endsAt, state.remainingMs);
+    const remainingMs = getRemainingTime(
+      state.endsAt,
+      state.remainingMs
+    );
 
-    if (remainingMs === 0) {
-      set({
-        remainingMs: 0,
-        endsAt: null,
-        status: "completed",
-      });
-
+    // Timer is still running
+    if (remainingMs > 0) {
+      set({ remainingMs });
       return;
     }
 
-    set({ remainingMs });
+    // Timer has completed
+    const completedAt = Date.now();
+
+    const newSession: Session = {
+      id: crypto.randomUUID(),
+      tag: state.currentTag,
+      durationMs: state.durationMs,
+      startedAt: state.currentStartedAt ?? completedAt,
+      completedAt,
+    };
+
+    set({
+      remainingMs: 0,
+      endsAt: null,
+      status: "completed",
+      sessions: [newSession, ...state.sessions],
+      currentStartedAt: null,
+    });
   },
 }));
 
@@ -106,3 +152,4 @@ export const selectProgress = (state: TimerState) =>
 
 export const selectFormattedTime = (state: TimerState) =>
   formatTime(state.remainingMs);
+
