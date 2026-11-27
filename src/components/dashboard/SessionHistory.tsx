@@ -21,7 +21,7 @@ export function SessionHistory({
   }
 
   return (
-    <section className="w-full border-t border-white/10 pt-3">
+    <section className="w-full border-t border-white/10 pt-3 default ">
       <h2 className="mb-3 text-xs font-semibold text-gray-300">
         Recent sessions
       </h2>
@@ -31,7 +31,7 @@ export function SessionHistory({
           No completed sessions yet.
         </p>
       ) : (
-        <div className="flex max-h-36 flex-col gap-2 overflow-y-auto">
+        <div className="flex max-h-36 flex-col gap-2 overflow-y-auto scrollbar-none">
           {sessions.map((session) => (
             <div
               key={session.id}
