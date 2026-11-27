@@ -7,6 +7,7 @@ import { TagManager } from "./components/dashboard/TagManager";
 import { SessionHistory } from "./components/dashboard/SessionHistory";
 import { useEffect } from "react";
 import { useTimerStore } from "./store/timerStore";
+import { AnalyticsPanel } from "./components/dashboard/AnalyticsPanel";
 
 function App() {
   const loadSessions = useTimerStore((state) => state.loadSessions);
@@ -144,6 +145,7 @@ function App() {
 
           <TagManager selectedTag={selectedTag} onSelectTag={setSelectedTag} />
           <SessionHistory sessions={sessions} />
+          <AnalyticsPanel sessions={sessions} />
         </div>
       </div>
     </main>
