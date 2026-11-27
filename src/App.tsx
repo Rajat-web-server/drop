@@ -5,8 +5,15 @@ import { WaterAnimation } from "./components/floating/WaterAnimation";
 import { useState } from "react";
 import { TagManager } from "./components/dashboard/TagManager";
 import { SessionHistory } from "./components/dashboard/SessionHistory";
+import { useEffect } from "react";
+import { useTimerStore } from "./store/timerStore";
 
 function App() {
+  const loadSessions = useTimerStore((state) => state.loadSessions);
+
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
   const [customMinutes, setCustomMinutes] = useState("30");
   const [selectedTag, setSelectedTag] = useState("Coding");
   const {
@@ -22,8 +29,8 @@ function App() {
   } = useTimer();
 
   {
-            console.log("session",sessions);
-          }
+    console.log("session", sessions);
+  }
   return (
     <main className="h-full w-full bg-transparent p-2">
       <div className="flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-[#15191f]/95 p-3 shadow-2xl">
@@ -136,8 +143,7 @@ function App() {
           </p>
 
           <TagManager selectedTag={selectedTag} onSelectTag={setSelectedTag} />
-          <SessionHistory sessions={sessions}  />
-          
+          <SessionHistory sessions={sessions} />
         </div>
       </div>
     </main>

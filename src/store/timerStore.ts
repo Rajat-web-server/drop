@@ -1,5 +1,6 @@
-
 import { create } from "zustand";
+import { saveSession } from "../services/database";
+import { getSessions } from "../services/database";
 
 import {
   getRemainingTime,
@@ -27,6 +28,7 @@ interface TimerState {
   reset: () => void;
   setDuration: (minutes: number) => void;
   sync: () => void;
+  loadSessions: () => Promise<void>;
 
   currentStartedAt: number | null;
   currentTag: string;
@@ -44,6 +46,14 @@ export const useTimerStore = create<TimerState>((set, get) => ({
   currentStartedAt: null,
   currentTag: "Coding",
   sessions: [],
+  loadSessions: async () => {
+    try {
+      const sessions = await getSessions();
+      set({ sessions });
+    } catch (error) {
+      console.error("Failed to load sessions:", error);
+    }
+  },
 
   start: (tag) => {
     const state = get();
@@ -55,8 +65,7 @@ export const useTimerStore = create<TimerState>((set, get) => ({
       endsAt: Date.now() + state.remainingMs,
       status: "running",
 
-      currentStartedAt:
-        state.currentStartedAt ?? Date.now(),
+      currentStartedAt: state.currentStartedAt ?? Date.now(),
 
       currentTag:
         state.currentStartedAt !== null
@@ -70,10 +79,7 @@ export const useTimerStore = create<TimerState>((set, get) => ({
 
     if (state.status !== "running") return;
 
-    const remainingMs = getRemainingTime(
-      state.endsAt,
-      state.remainingMs
-    );
+    const remainingMs = getRemainingTime(state.endsAt, state.remainingMs);
 
     set({
       remainingMs,
@@ -113,10 +119,7 @@ export const useTimerStore = create<TimerState>((set, get) => ({
     // Only sync an active timer
     if (state.status !== "running") return;
 
-    const remainingMs = getRemainingTime(
-      state.endsAt,
-      state.remainingMs
-    );
+    const remainingMs = getRemainingTime(state.endsAt, state.remainingMs);
 
     // Timer is still running
     if (remainingMs > 0) {
@@ -134,6 +137,9 @@ export const useTimerStore = create<TimerState>((set, get) => ({
       startedAt: state.currentStartedAt ?? completedAt,
       completedAt,
     };
+    void saveSession(newSession).catch((error) => {
+      console.error("Failed to save session:", error);
+    });
 
     set({
       remainingMs: 0,
@@ -152,4 +158,3 @@ export const selectProgress = (state: TimerState) =>
 
 export const selectFormattedTime = (state: TimerState) =>
   formatTime(state.remainingMs);
-
